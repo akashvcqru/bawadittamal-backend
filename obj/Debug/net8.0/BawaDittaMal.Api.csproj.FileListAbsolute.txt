@@ -125,3 +125,4 @@ D:\Aditya\bava-datta\bawadittamal-backend\obj\Debug\net8.0\refint\BawaDittaMal.A
 D:\Aditya\bava-datta\bawadittamal-backend\obj\Debug\net8.0\BawaDittaMal.Api.pdb
 D:\Aditya\bava-datta\bawadittamal-backend\obj\Debug\net8.0\BawaDittaMal.Api.genruntimeconfig.cache
 D:\Aditya\bava-datta\bawadittamal-backend\obj\Debug\net8.0\ref\BawaDittaMal.Api.dll
+D:\Aditya\bava-datta\bawadittamal-backend\obj\Debug\net8.0\BawaDittaMal.Api.sourcelink.json
