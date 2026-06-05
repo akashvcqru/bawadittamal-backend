@@ -10,5 +10,6 @@ namespace BawaDittaMal.Api.Models
         public string Quote { get; set; } = string.Empty;
         public int Rating { get; set; } = 5;
         public string Status { get; set; } = "active"; // active, inactive
+        public string Image { get; set; } = string.Empty;
     }
 }

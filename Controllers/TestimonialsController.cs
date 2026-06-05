@@ -48,6 +48,7 @@ namespace BawaDittaMal.Api.Controllers
             testimonial.Quote = testimonialData.Quote;
             testimonial.Rating = testimonialData.Rating;
             testimonial.Status = testimonialData.Status;
+            testimonial.Image = testimonialData.Image;
 
             await _context.SaveChangesAsync();
             return Success(testimonial, "Testimonial updated successfully.");

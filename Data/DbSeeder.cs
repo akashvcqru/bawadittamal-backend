@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 using BawaDittaMal.Api.Models;
 
 namespace BawaDittaMal.Api.Data
@@ -14,6 +15,15 @@ namespace BawaDittaMal.Api.Data
         {
             using var context = serviceProvider.GetRequiredService<AppDbContext>();
             context.Database.EnsureCreated();
+
+            try
+            {
+                context.Database.ExecuteSqlRaw("ALTER TABLE Testimonials ADD COLUMN Image TEXT NOT NULL DEFAULT ''");
+            }
+            catch (Exception)
+            {
+                // Column already exists, ignore
+            }
 
             if (context.Categories.Any())
             {
@@ -217,6 +227,335 @@ namespace BawaDittaMal.Api.Data
                 ReadTime = "3 Min Read"
             };
             context.Blogs.Add(defaultBlog);
+        }
+
+        public static void MigrateFromSqliteToSqlServer(AppDbContext sqlServerContext)
+        {
+            var sqliteOptions = new DbContextOptionsBuilder<AppDbContext>()
+                .UseSqlite("Data Source=bawadittamal.db")
+                .Options;
+
+            using var sqliteContext = new AppDbContext(sqliteOptions);
+
+            // 1. Categories
+            if (sqliteContext.Categories.Any())
+            {
+                sqlServerContext.Subcategories.RemoveRange(sqlServerContext.Subcategories);
+                sqlServerContext.Categories.RemoveRange(sqlServerContext.Categories);
+                sqlServerContext.SaveChanges();
+
+                var sqliteCategories = sqliteContext.Categories.AsNoTracking().ToList();
+                foreach (var cat in sqliteCategories)
+                {
+                    sqlServerContext.Categories.Add(new Category
+                    {
+                        Id = cat.Id,
+                        Name = cat.Name,
+                        Slug = cat.Slug,
+                        Image = cat.Image,
+                        Description = cat.Description
+                    });
+                }
+                sqlServerContext.SaveChanges();
+            }
+
+            // 2. Subcategories (identity column)
+            if (sqliteContext.Subcategories.Any())
+            {
+                var sqliteSubcats = sqliteContext.Subcategories.AsNoTracking().ToList();
+                using (var transaction = sqlServerContext.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        sqlServerContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Subcategories ON");
+                        foreach (var sub in sqliteSubcats)
+                        {
+                            sqlServerContext.Subcategories.Add(new Subcategory
+                            {
+                                Id = sub.Id,
+                                Name = sub.Name,
+                                Slug = sub.Slug,
+                                CategoryId = sub.CategoryId
+                            });
+                        }
+                        sqlServerContext.SaveChanges();
+                        sqlServerContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Subcategories OFF");
+                        transaction.Commit();
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
+            }
+
+            // 3. Brands (identity column)
+            if (sqliteContext.Brands.Any())
+            {
+                sqlServerContext.Brands.RemoveRange(sqlServerContext.Brands);
+                sqlServerContext.SaveChanges();
+
+                var sqliteBrands = sqliteContext.Brands.AsNoTracking().ToList();
+                using (var transaction = sqlServerContext.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        sqlServerContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Brands ON");
+                        foreach (var brand in sqliteBrands)
+                        {
+                            sqlServerContext.Brands.Add(new Brand
+                            {
+                                Id = brand.Id,
+                                Name = brand.Name,
+                                Url = brand.Url,
+                                Link = brand.Link
+                            });
+                        }
+                        sqlServerContext.SaveChanges();
+                        sqlServerContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Brands OFF");
+                        transaction.Commit();
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
+            }
+
+            // 4. Products (string ID)
+            if (sqliteContext.Products.Any())
+            {
+                sqlServerContext.Products.RemoveRange(sqlServerContext.Products);
+                sqlServerContext.SaveChanges();
+
+                var sqliteProducts = sqliteContext.Products.AsNoTracking().ToList();
+                foreach (var prod in sqliteProducts)
+                {
+                    sqlServerContext.Products.Add(new Product
+                    {
+                        Id = prod.Id,
+                        Slug = prod.Slug,
+                        Name = prod.Name,
+                        Brand = prod.Brand,
+                        Category = prod.Category,
+                        Subcategory = prod.Subcategory,
+                        Type = prod.Type,
+                        Price = prod.Price,
+                        Mrp = prod.Mrp,
+                        CatNo = prod.CatNo,
+                        Status = prod.Status,
+                        Stock = prod.Stock,
+                        Description = prod.Description,
+                        Images = prod.Images,
+                        ShortSpecs = prod.ShortSpecs,
+                        Specifications = prod.Specifications,
+                        Variants = prod.Variants,
+                        Features = prod.Features
+                    });
+                }
+                sqlServerContext.SaveChanges();
+            }
+
+            // 5. Blogs (string ID)
+            if (sqliteContext.Blogs.Any())
+            {
+                sqlServerContext.Blogs.RemoveRange(sqlServerContext.Blogs);
+                sqlServerContext.SaveChanges();
+
+                var sqliteBlogs = sqliteContext.Blogs.AsNoTracking().ToList();
+                foreach (var blog in sqliteBlogs)
+                {
+                    sqlServerContext.Blogs.Add(new Blog
+                    {
+                        Id = blog.Id,
+                        Title = blog.Title,
+                        Slug = blog.Slug,
+                        Image = blog.Image,
+                        Category = blog.Category,
+                        AuthorName = blog.AuthorName,
+                        AuthorRole = blog.AuthorRole,
+                        Tags = blog.Tags,
+                        Excerpt = blog.Excerpt,
+                        Content = blog.Content,
+                        Date = blog.Date,
+                        ReadTime = blog.ReadTime
+                    });
+                }
+                sqlServerContext.SaveChanges();
+            }
+
+            // 6. GalleryItems (identity column)
+            if (sqliteContext.GalleryItems.Any())
+            {
+                sqlServerContext.GalleryItems.RemoveRange(sqlServerContext.GalleryItems);
+                sqlServerContext.SaveChanges();
+
+                var sqliteGallery = sqliteContext.GalleryItems.AsNoTracking().ToList();
+                using (var transaction = sqlServerContext.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        sqlServerContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT GalleryItems ON");
+                        foreach (var item in sqliteGallery)
+                        {
+                            sqlServerContext.GalleryItems.Add(new GalleryItem
+                            {
+                                Id = item.Id,
+                                Title = item.Title,
+                                Category = item.Category,
+                                Image = item.Image
+                            });
+                        }
+                        sqlServerContext.SaveChanges();
+                        sqlServerContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT GalleryItems OFF");
+                        transaction.Commit();
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
+            }
+
+            // 7. Testimonials (identity column)
+            if (sqliteContext.Testimonials.Any())
+            {
+                sqlServerContext.Testimonials.RemoveRange(sqlServerContext.Testimonials);
+                sqlServerContext.SaveChanges();
+
+                var sqliteTestimonials = sqliteContext.Testimonials.AsNoTracking().ToList();
+                using (var transaction = sqlServerContext.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        sqlServerContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Testimonials ON");
+                        foreach (var t in sqliteTestimonials)
+                        {
+                            sqlServerContext.Testimonials.Add(new Testimonial
+                            {
+                                Id = t.Id,
+                                Name = t.Name,
+                                Role = t.Role,
+                                Company = t.Company,
+                                Category = t.Category,
+                                Quote = t.Quote,
+                                Rating = t.Rating,
+                                Status = t.Status,
+                                Image = t.Image
+                            });
+                        }
+                        sqlServerContext.SaveChanges();
+                        sqlServerContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Testimonials OFF");
+                        transaction.Commit();
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
+            }
+
+            // 8. SliderItems (identity column)
+            if (sqliteContext.SliderItems.Any())
+            {
+                sqlServerContext.SliderItems.RemoveRange(sqlServerContext.SliderItems);
+                sqlServerContext.SaveChanges();
+
+                var sqliteSlider = sqliteContext.SliderItems.AsNoTracking().ToList();
+                using (var transaction = sqlServerContext.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        sqlServerContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT SliderItems ON");
+                        foreach (var item in sqliteSlider)
+                        {
+                            sqlServerContext.SliderItems.Add(new SliderItem
+                            {
+                                Id = item.Id,
+                                Image = item.Image,
+                                Title = item.Title,
+                                Subtitle = item.Subtitle,
+                                Description = item.Description,
+                                BtnText = item.BtnText,
+                                BtnLink = item.BtnLink,
+                                Btn1Text = item.Btn1Text,
+                                Btn1Link = item.Btn1Link,
+                                Btn2Text = item.Btn2Text,
+                                Btn2Link = item.Btn2Link,
+                                Status = item.Status
+                            });
+                        }
+                        sqlServerContext.SaveChanges();
+                        sqlServerContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT SliderItems OFF");
+                        transaction.Commit();
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
+            }
+
+            // 9. Inquiries (identity column)
+            if (sqliteContext.Inquiries.Any())
+            {
+                sqlServerContext.Inquiries.RemoveRange(sqlServerContext.Inquiries);
+                sqlServerContext.SaveChanges();
+
+                var sqliteInquiries = sqliteContext.Inquiries.AsNoTracking().ToList();
+                using (var transaction = sqlServerContext.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        sqlServerContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Inquiries ON");
+                        foreach (var inq in sqliteInquiries)
+                        {
+                            sqlServerContext.Inquiries.Add(new Inquiry
+                            {
+                                Id = inq.Id,
+                                Name = inq.Name,
+                                Email = inq.Email,
+                                Phone = inq.Phone,
+                                Subject = inq.Subject,
+                                Message = inq.Message,
+                                Date = inq.Date,
+                                Status = inq.Status
+                            });
+                        }
+                        sqlServerContext.SaveChanges();
+                        sqlServerContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Inquiries OFF");
+                        transaction.Commit();
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
+            }
+
+            // 10. Settings (string key ID)
+            if (sqliteContext.Settings.Any())
+            {
+                sqlServerContext.Settings.RemoveRange(sqlServerContext.Settings);
+                sqlServerContext.SaveChanges();
+
+                var sqliteSettings = sqliteContext.Settings.AsNoTracking().ToList();
+                foreach (var set in sqliteSettings)
+                {
+                    sqlServerContext.Settings.Add(new Setting
+                    {
+                        Key = set.Key,
+                        Value = set.Value
+                    });
+                }
+                sqlServerContext.SaveChanges();
+            }
         }
     }
 }
