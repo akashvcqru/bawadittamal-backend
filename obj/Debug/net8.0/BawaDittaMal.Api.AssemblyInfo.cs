@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BawaDittaMal.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b587b7a2507eb84c3ab10b658ec21d792f2aa873")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7478e2a8d285d635a3296ad65f091dc1d53410d3")]
 [assembly: System.Reflection.AssemblyProductAttribute("BawaDittaMal.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BawaDittaMal.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
