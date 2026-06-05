@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using BawaDittaMal.Api.Data;
 using BawaDittaMal.Api.Models;
 using BawaDittaMal.Api.DTOs;
+using BawaDittaMal.Api.Helpers;
+using Microsoft.AspNetCore.Hosting;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
@@ -12,10 +14,12 @@ namespace BawaDittaMal.Api.Controllers
     public class ProductsController : BaseApiController
     {
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public ProductsController(AppDbContext context)
+        public ProductsController(AppDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
         [HttpGet]
@@ -126,6 +130,11 @@ namespace BawaDittaMal.Api.Controllers
                 return Error<Product>("Product with this ID already exists.");
             }
 
+            if (product.Images != null)
+            {
+                product.Images = product.Images.Select(img => FileHelper.SaveBase64Image(img, _env.ContentRootPath, "product")).ToList();
+            }
+
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
@@ -153,7 +162,16 @@ namespace BawaDittaMal.Api.Controllers
             product.Status = productData.Status;
             product.Stock = productData.Stock;
             product.Description = productData.Description;
-            product.Images = productData.Images;
+            
+            if (productData.Images != null)
+            {
+                product.Images = productData.Images.Select(img => FileHelper.SaveBase64Image(img, _env.ContentRootPath, "product")).ToList();
+            }
+            else
+            {
+                product.Images = new List<string>();
+            }
+
             product.ShortSpecs = productData.ShortSpecs;
             product.Specifications = productData.Specifications;
             product.Variants = productData.Variants;

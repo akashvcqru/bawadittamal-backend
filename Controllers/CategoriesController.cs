@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using BawaDittaMal.Api.Data;
 using BawaDittaMal.Api.Models;
 using BawaDittaMal.Api.DTOs;
+using BawaDittaMal.Api.Helpers;
+using Microsoft.AspNetCore.Hosting;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
@@ -12,10 +14,12 @@ namespace BawaDittaMal.Api.Controllers
     public class CategoriesController : BaseApiController
     {
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public CategoriesController(AppDbContext context)
+        public CategoriesController(AppDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
         [HttpGet]
@@ -55,6 +59,8 @@ namespace BawaDittaMal.Api.Controllers
                 return Error<Category>("Category with this ID already exists.");
             }
 
+            category.Image = FileHelper.SaveBase64Image(category.Image, _env.ContentRootPath, "category");
+
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
 
@@ -72,7 +78,7 @@ namespace BawaDittaMal.Api.Controllers
 
             category.Name = categoryData.Name;
             category.Slug = categoryData.Slug;
-            category.Image = categoryData.Image;
+            category.Image = FileHelper.SaveBase64Image(categoryData.Image, _env.ContentRootPath, "category");
             category.Description = categoryData.Description;
 
             await _context.SaveChangesAsync();

@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "targets": {
     "net8.0": {
       "Azure.Core/1.25.0": {
@@ -4395,30 +4395,29 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Roshni\\.nuget\\packages\\": {}
+    "C:\\Users\\DELL\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Aditya\\bava-datta\\bawadittamal-backend\\BawaDittaMal.Api.csproj",
+      "projectUniqueName": "D:\\bawadittamal\\bawadittamal-backend\\BawaDittaMal.Api.csproj",
       "projectName": "BawaDittaMal.Api",
-      "projectPath": "D:\\Aditya\\bava-datta\\bawadittamal-backend\\BawaDittaMal.Api.csproj",
-      "packagesPath": "C:\\Users\\Roshni\\.nuget\\packages\\",
-      "outputPath": "D:\\Aditya\\bava-datta\\bawadittamal-backend\\obj\\",
+      "projectPath": "D:\\bawadittamal\\bawadittamal-backend\\BawaDittaMal.Api.csproj",
+      "packagesPath": "C:\\Users\\DELL\\.nuget\\packages\\",
+      "outputPath": "D:\\bawadittamal\\bawadittamal-backend\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Roshni\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\DELL\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net8.0": {
+          "framework": "net8.0",
           "targetAlias": "net8.0",
           "projectReferences": {}
         }
@@ -4427,10 +4426,17 @@
         "warnAsError": [
           "NU1605"
         ]
-      }
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "10.0.300"
     },
     "frameworks": {
       "net8.0": {
+        "framework": "net8.0",
         "targetAlias": "net8.0",
         "dependencies": {
           "Microsoft.EntityFrameworkCore.Design": {
@@ -4467,7 +4473,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

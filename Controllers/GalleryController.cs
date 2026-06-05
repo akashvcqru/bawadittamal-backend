@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using BawaDittaMal.Api.Data;
 using BawaDittaMal.Api.Models;
 using BawaDittaMal.Api.DTOs;
+using BawaDittaMal.Api.Helpers;
+using Microsoft.AspNetCore.Hosting;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -11,10 +13,12 @@ namespace BawaDittaMal.Api.Controllers
     public class GalleryController : BaseApiController
     {
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public GalleryController(AppDbContext context)
+        public GalleryController(AppDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
         [HttpGet]
@@ -27,6 +31,7 @@ namespace BawaDittaMal.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<ApiResponse<GalleryItem>>> CreateGalleryItem([FromBody] GalleryItem item)
         {
+            item.Image = FileHelper.SaveBase64Image(item.Image, _env.ContentRootPath, "gallery");
             _context.GalleryItems.Add(item);
             await _context.SaveChangesAsync();
             return Success(item, "Gallery item added successfully.");
@@ -43,7 +48,7 @@ namespace BawaDittaMal.Api.Controllers
 
             item.Title = itemData.Title;
             item.Category = itemData.Category;
-            item.Image = itemData.Image;
+            item.Image = FileHelper.SaveBase64Image(itemData.Image, _env.ContentRootPath, "gallery");
 
             await _context.SaveChangesAsync();
             return Success(item, "Gallery item updated successfully.");

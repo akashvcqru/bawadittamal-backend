@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using BawaDittaMal.Api.Data;
 using BawaDittaMal.Api.Models;
 using BawaDittaMal.Api.DTOs;
+using BawaDittaMal.Api.Helpers;
+using Microsoft.AspNetCore.Hosting;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -11,10 +13,12 @@ namespace BawaDittaMal.Api.Controllers
     public class SliderController : BaseApiController
     {
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public SliderController(AppDbContext context)
+        public SliderController(AppDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
         [HttpGet]
@@ -27,6 +31,7 @@ namespace BawaDittaMal.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<ApiResponse<SliderItem>>> CreateSliderItem([FromBody] SliderItem item)
         {
+            item.Image = FileHelper.SaveBase64Image(item.Image, _env.ContentRootPath, "slider");
             _context.SliderItems.Add(item);
             await _context.SaveChangesAsync();
             return Success(item, "Slider item added successfully.");
@@ -41,7 +46,7 @@ namespace BawaDittaMal.Api.Controllers
                 return Error<SliderItem>("Slider item not found.", 404);
             }
 
-            item.Image = itemData.Image;
+            item.Image = FileHelper.SaveBase64Image(itemData.Image, _env.ContentRootPath, "slider");
             item.Title = itemData.Title;
             item.Subtitle = itemData.Subtitle;
             item.Description = itemData.Description;

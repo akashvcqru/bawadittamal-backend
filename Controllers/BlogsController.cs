@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using BawaDittaMal.Api.Data;
 using BawaDittaMal.Api.Models;
 using BawaDittaMal.Api.DTOs;
+using BawaDittaMal.Api.Helpers;
+using Microsoft.AspNetCore.Hosting;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -11,10 +13,12 @@ namespace BawaDittaMal.Api.Controllers
     public class BlogsController : BaseApiController
     {
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public BlogsController(AppDbContext context)
+        public BlogsController(AppDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
         [HttpGet]
@@ -57,6 +61,8 @@ namespace BawaDittaMal.Api.Controllers
                 blog.Date = System.DateTime.Now.ToString("MMM dd, yyyy");
             }
 
+            blog.Image = FileHelper.SaveBase64Image(blog.Image, _env.ContentRootPath, "blog");
+
             _context.Blogs.Add(blog);
             await _context.SaveChangesAsync();
             return Success(blog, "Blog post published successfully.");
@@ -73,7 +79,7 @@ namespace BawaDittaMal.Api.Controllers
 
             blog.Title = blogData.Title;
             blog.Slug = blogData.Slug;
-            blog.Image = blogData.Image;
+            blog.Image = FileHelper.SaveBase64Image(blogData.Image, _env.ContentRootPath, "blog");
             blog.Category = blogData.Category;
             blog.AuthorName = blogData.AuthorName;
             blog.AuthorRole = blogData.AuthorRole;

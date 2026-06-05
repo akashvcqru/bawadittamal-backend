@@ -1,0 +1,13 @@
+# Ignore build outputs
+bin/
+obj/
+publish/
+
+# Ignore user-specific/IDE files
+.vs/
+.vscode/
+*.user
+
+# Ignore uploads contents except keep file
+uploads/*
+!uploads/.gitkeep

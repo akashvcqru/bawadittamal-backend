@@ -1,11 +1,1 @@
-{
-  "Version": 1,
-  "Hash": "+Gn3p5PbDvi9hlg3jfqa0J7NZdjdPLL6e0t2GhOY0IQ=",
-  "Source": "BawaDittaMal.Api",
-  "BasePath": "_content/BawaDittaMal.Api",
-  "Mode": "Default",
-  "ManifestType": "Build",
-  "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
-  "Assets": []
-}
+{"Version":1,"Hash":"yQW8LZt39iCw/nCxRfKz3tC4+nXhj1HOMzdvq5OZZgM=","Source":"BawaDittaMal.Api","BasePath":"/","Mode":"Root","ManifestType":"Build","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[],"Assets":[],"Endpoints":[]}

@@ -44,6 +44,18 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowAll");
 
+// Configure Static Files for serving uploads from root folder
+var uploadsPath = Path.Combine(app.Environment.ContentRootPath, "uploads");
+if (!Directory.Exists(uploadsPath))
+{
+    Directory.CreateDirectory(uploadsPath);
+}
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(uploadsPath),
+    RequestPath = "/uploads"
+});
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();

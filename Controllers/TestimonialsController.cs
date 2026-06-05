@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using BawaDittaMal.Api.Data;
 using BawaDittaMal.Api.Models;
 using BawaDittaMal.Api.DTOs;
+using BawaDittaMal.Api.Helpers;
+using Microsoft.AspNetCore.Hosting;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -11,10 +13,12 @@ namespace BawaDittaMal.Api.Controllers
     public class TestimonialsController : BaseApiController
     {
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public TestimonialsController(AppDbContext context)
+        public TestimonialsController(AppDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
         [HttpGet]
@@ -27,6 +31,7 @@ namespace BawaDittaMal.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<ApiResponse<Testimonial>>> CreateTestimonial([FromBody] Testimonial testimonial)
         {
+            testimonial.Image = FileHelper.SaveBase64Image(testimonial.Image, _env.ContentRootPath, "testimonial");
             _context.Testimonials.Add(testimonial);
             await _context.SaveChangesAsync();
             return Success(testimonial, "Testimonial created successfully.");
@@ -48,7 +53,7 @@ namespace BawaDittaMal.Api.Controllers
             testimonial.Quote = testimonialData.Quote;
             testimonial.Rating = testimonialData.Rating;
             testimonial.Status = testimonialData.Status;
-            testimonial.Image = testimonialData.Image;
+            testimonial.Image = FileHelper.SaveBase64Image(testimonialData.Image, _env.ContentRootPath, "testimonial");
 
             await _context.SaveChangesAsync();
             return Success(testimonial, "Testimonial updated successfully.");
