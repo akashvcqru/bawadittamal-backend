@@ -276,3 +276,9 @@ D:\bawadittamal\bawadittamal-backend\obj\Debug\net8.0\BawaDittaMal.Api.pdb
 D:\bawadittamal\bawadittamal-backend\obj\Debug\net8.0\BawaDittaMal.Api.genruntimeconfig.cache
 D:\bawadittamal\bawadittamal-backend\obj\Debug\net8.0\ref\BawaDittaMal.Api.dll
 D:\bawadittamal\bawadittamal-backend\bin\Debug\net8.0\BawaDittaMal.Api.staticwebassets.runtime.json
+D:\bawadittamal\bawadittamal-backend\bin\Debug\net8.0\publish\web.config
+D:\bawadittamal\bawadittamal-backend\bin\Debug\net8.0\publish\appsettings.Development.json
+D:\bawadittamal\bawadittamal-backend\bin\Debug\net8.0\publish\appsettings.json
+D:\bawadittamal\bawadittamal-backend\bin\Debug\net8.0\publish\BawaDittaMal.Api.deps.json
+D:\bawadittamal\bawadittamal-backend\bin\Debug\net8.0\publish\BawaDittaMal.Api.runtimeconfig.json
+D:\bawadittamal\bawadittamal-backend\bin\Debug\net8.0\publish\BawaDittaMal.Api.staticwebassets.endpoints.json

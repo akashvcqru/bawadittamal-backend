@@ -35,6 +35,9 @@ using (var scope = app.Services.CreateScope())
     DbSeeder.Seed(services);
 }
 
+// Migrate any existing Base64 images to physical files on startup
+await BawaDittaMal.Api.Helpers.DbImageMigration.MigrateBase64Images(app.Services);
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
